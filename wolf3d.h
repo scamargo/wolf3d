@@ -6,7 +6,7 @@
 /*   By: scamargo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/05 13:28:19 by scamargo          #+#    #+#             */
-/*   Updated: 2018/02/05 19:35:18 by scamargo         ###   ########.fr       */
+/*   Updated: 2018/02/06 21:02:43 by scamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ typedef struct	s_view
 }				t_view;
 
 # define PIXELS_PER_UNIT 375
-# define WINDOW_HEIGHT 1
-# define WINDOW_WIDTH 1
+# define WINDOW_HEIGHT 1.15
+# define WINDOW_WIDTH 1.15
 # define WALL_HEIGHT 4
 # define CAMERA_TO_WALL_HEIGHT .5
 # define DISTANCE_TO_SCREEN 1
-
+# define TAN_30 0.57735026919
 #endif
