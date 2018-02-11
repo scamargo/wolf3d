@@ -38,22 +38,22 @@ void	draw_column(t_view *view, int x, float distance_to_wall)
 	}
 }
 
-float	find_xintercept_dist(float x_delta, float y_delta, float camera_pos[2], char **map)
+float	find_xintercept_dist(float x_delta, float y_delta, t_map *map)
 {
 	float currentY;
 	float x;
 	
-	currentY = roundf(camera_pos[1]);
+	currentY = roundf(map->cameraY);
 	if (y_delta < 0)
 	{
 		while (1)
 		{
 			if (1) // TODO: change to if(in_map(currentY))
 			{
-				x = (currentY - camera_pos[1]) / (y_delta / x_delta) + camera_pos[0];
-				if (map[(int)currentY - 1][(int)x] == '1')
+				x = (currentY - map->cameraY) / (y_delta / x_delta) + map->cameraX;
+				if (map->grid[(int)currentY - 1][(int)x] == '1')
 				{
-					return fabs(camera_pos[1] - currentY); // TODO: use hypotenuse to get this work with different camera directions!!!!!
+					return fabs(map->cameraY - currentY); // TODO: use hypotenuse to get this work with different camera directions!!!!!
 				}
 				currentY--;
 			}
@@ -74,7 +74,7 @@ int		in_map(int x, int y) // TODO: use boundaries of map to do check
 	return (1);
 }
 
-float	find_yintercept_dist(float x_delta, float y_delta, float camera_pos[2], char **map)
+float	find_yintercept_dist(float x_delta, float y_delta, t_map *map)
 {
 	float currentX;
 	float y;
@@ -82,116 +82,56 @@ float	find_yintercept_dist(float x_delta, float y_delta, float camera_pos[2], ch
 	
 	adjustment = (x_delta < 0) ? 1 : 0;
 	if (x_delta < 0)
-		currentX = roundf(camera_pos[0]);
+		currentX = roundf(map->cameraX);
 	else
-		currentX = roundf(camera_pos[0] + 1);
-	//if (x_delta < 0)
-	//{
-		while (1)
+		currentX = roundf(map->cameraX + 1);
+	while (1)
+	{
+		y = (currentX - map->cameraX) * (y_delta / x_delta) + map->cameraY;
+		if (!in_map((int)currentX - adjustment, (int)y)) // TODO pass map
+			return (0);
+		if (map->grid[(int)y][(int)currentX - adjustment] == '1')
 		{
-				y = (currentX - camera_pos[0]) * (y_delta / x_delta) + camera_pos[1];
-				if (!in_map((int)currentX - adjustment, (int)y))
-					return (0);
-				if (map[(int)y][(int)currentX - adjustment] == '1')
-				{
-					return fabs(camera_pos[1] - y); // TODO: use hypotenuse to get this work with different camera directions!!!!!
-				}
-				if (x_delta < 0)
-					currentX--;
-				else
-					currentX++;
+			return fabs(map->cameraY - y); // TODO: use hypotenuse to get this work with different camera directions!!!!!
 		}
-	//}
-	// TODO: handle y_delta >= 0
+		if (x_delta < 0)
+			currentX--;
+		else
+			currentX++;
+	}
 	return (0);
 }
 
-float	find_distance(int x, char **map, int pixel_width)
+float	find_distance(int x, t_map *map, int pixel_width)
 {
-	float camera_pos[2];
 	float rise;
 	float run;
 
 	float dist1;
 	float dist2;
-	camera_pos[0] = 6;
-	camera_pos[1] = 8;
-	rise = -1 * (pixel_width / 2) / TAN_30; // FIX: multiplying by neg one so direction goes up
+	rise = -1 * (pixel_width / 2) / TAN_33; // FIX: multiplying by neg one so direction goes up
 	run = -1 * pixel_width / 2 + x;
 	
-	dist1 = find_xintercept_dist(run, rise, camera_pos, map);
-	dist2 = find_yintercept_dist(run, rise, camera_pos, map);
+	dist1 = find_xintercept_dist(run, rise, map);
+	dist2 = find_yintercept_dist(run, rise, map);
 	if (!dist1)
 		return (dist2);
 	else if (!dist2)
 		return (dist1);
-	printf("slope: %f, dist1: %f, dist2: %f\n", rise/run,  dist1, dist2);
 	return (dist1 < dist2 ? dist1 : dist2);
-	//find_yintercept_dist(
-	
-	/*if (fabs(rise) > fabs(run))
-	{
-		run /= fabs(rise);
-		rise /= fabs(rise);
-	}
-	else
-	{
-		rise /= fabs(run);
-		run /= fabs(run);
-	}
-	i = 0;
-	while (1)
-	{
-		
-		// TODO: handle if 1 is never found
-		camera_pos[0] += run;
-		camera_pos[1] += rise;
-		ft_putstr("camera_x: ");
-		ft_putnbr(camera_pos[0]);
-		ft_putchar('\n');
-		ft_putstr("camera_y: ");
-		ft_putnbr(camera_pos[1]);
-		ft_putchar('\n');
-
-		if (map[(int)camera_pos[1]][(int)camera_pos[0]] == '1')
-		{
-			
-			printf("camera_x: %f, camera_y: %f\n", camera_pos[0], camera_pos[1]);
-			return (fabs(rise) * i);
-			// if going up and right
-			//return (rise / run * (int)camera_pos[0]);
-		}
-		i++;
-	}*/
 }
-
 
 void	draw(t_view *view)
 {
 	int x;
 	int width_in_pixels;
 	float distance;
-	char **map;
-
-	map = ft_init_chartable(10, 11);
-	map[0] = "111111111";
-	map[1] = "100111001";
-	map[2] = "100000001";
-	map[3] = "100000001";
-	map[4] = "100000001";
-	map[5] = "100000001";
-	map[6] = "100000001";
-	map[7] = "100000001";
-	map[8] = "100000001";
-	map[9] = "111111111";
-	map[10] = 0;
-
 
 	x = 0;
 	width_in_pixels = WINDOW_WIDTH * PIXELS_PER_UNIT;
-	while (x <= width_in_pixels) //should it be less than?
+	while (x < width_in_pixels)
 	{
-		distance = find_distance(x, map, width_in_pixels);
+		distance = find_distance(x, view->map, width_in_pixels);
 		draw_column(view, x, distance);
 		x++;
 	}
@@ -201,8 +141,39 @@ int key_handler(int key, t_view *view)
 {
 	if (key == KEY_ESC)
 		ft_putendl("escape");
-	mlx_pixel_put(view->mlx, view->window, 10, 10, 0xFFFFFF);
+	else if (key == KEY_W)
+		ft_putendl("forward"); // TODO: redraw with adjusted position
+	else if (key == KEY_S)
+		ft_putendl("back"); // TODO: redraw with adjusted position
 	return (0);
+}
+
+void	parse_map(t_view *view)
+{
+	t_map *map;
+	char **table;
+
+	map = (t_map*)ft_memalloc(sizeof(t_map));
+	map->width = 9;
+	map->height = 10;
+	map->cameraX = 4;
+	map->cameraY = 8;
+	map->directionX = 0;
+	map->directionY = -1;
+	table = ft_init_chartable(10, 11);
+	table[0] = "111111111";
+	table[1] = "100000001";
+	table[2] = "100000001";
+	table[3] = "100000001";
+	table[4] = "100000001";
+	table[5] = "100000001";
+	table[6] = "100000001";
+	table[7] = "100000001";
+	table[8] = "100000001";
+	table[9] = "111111111";
+	table[10] = 0;
+	map->grid = table;
+	view->map = map;
 }
 
 int main(void)
@@ -212,7 +183,8 @@ int main(void)
 	view->mlx = mlx_init();
 	view->window = mlx_new_window(view->mlx, WINDOW_WIDTH * PIXELS_PER_UNIT, WINDOW_HEIGHT * PIXELS_PER_UNIT, "Wolf3d");
 	mlx_key_hook(view->window, key_handler, view);
-	draw(view); // TODO: pass it a map
+	parse_map(view);
+	draw(view);
 	mlx_loop(view->mlx);
 	return (0);
 }
