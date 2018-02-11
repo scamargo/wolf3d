@@ -29,20 +29,22 @@ void	draw_column(t_view *view, int x, float distance_to_wall)
 	eye_level_height = window_height_pixels / 2;
 	y = eye_level_height;
 	draw_height = wall_over_fov * WINDOW_HEIGHT * (1 - CAMERA_TO_WALL_HEIGHT) * PIXELS_PER_UNIT;
-	while (y > eye_level_height - draw_height)
+	while (y >= 0)
 	{
-		if (y < 0)
-			break;
-		mlx_pixel_put(view->mlx, view->window, x, y, 0xFFFFFF);
+		if (y > eye_level_height - draw_height)
+			mlx_pixel_put(view->mlx, view->window, x, y, 0xFFFFFF);
+		else
+			mlx_pixel_put(view->mlx, view->window, x, y, 0x000000);
 		y--;
 	}
 	y = eye_level_height;
 	draw_height = wall_over_fov * WINDOW_HEIGHT * CAMERA_TO_WALL_HEIGHT * PIXELS_PER_UNIT;
-	while (y < eye_level_height + draw_height)
+	while (y < window_height_pixels)
 	{
-		if (y > window_height_pixels)
-			break;
-		mlx_pixel_put(view->mlx, view->window, x, y, 0xFFFFFF);
+		if (y < eye_level_height + draw_height)
+			mlx_pixel_put(view->mlx, view->window, x, y, 0xFFFFFF);
+		else
+			mlx_pixel_put(view->mlx, view->window, x, y, 0x000000);
 		y++;
 	}
 }
@@ -129,6 +131,8 @@ void	draw(t_view *view)
 	while (x < width_in_pixels)
 	{
 		distance = find_distance(x, view->map, width_in_pixels);
+		if (x == 0)
+			printf("cameraX: %f, cameraY: %f\n", view->map->cameraX, view->map->cameraY);
 		draw_column(view, x, distance);
 		x++;
 	}
@@ -139,9 +143,25 @@ int key_handler(int key, t_view *view)
 	if (key == KEY_ESC)
 		ft_putendl("escape");
 	else if (key == KEY_W)
-		ft_putendl("forward"); // TODO: redraw with adjusted position
+	{
+		view->map->cameraY += -.1; // TODO: adjust cameraX & cameraY based on direction
+		draw(view);
+	}
 	else if (key == KEY_S)
-		ft_putendl("back"); // TODO: redraw with adjusted position
+	{
+		view->map->cameraY += .1; // TODO: adjust cameraX & cameraY based on direction
+		draw(view);
+	}
+	else if (key == KEY_A)
+	{
+		view->map->cameraX += -.1; // TODO: adjust based on camera position
+		draw(view);
+	}
+	else if (key == KEY_D)
+	{
+		view->map->cameraX += .1;
+		draw(view);
+	}	
 	return (0);
 }
 
@@ -153,7 +173,7 @@ void	parse_map(t_view *view)
 	map = (t_map*)ft_memalloc(sizeof(t_map));
 	map->width = 9;
 	map->height = 10;
-	map->cameraX = 4;
+	map->cameraX = 3;
 	map->cameraY = 8;
 	map->directionX = 0;
 	map->directionY = -1;
@@ -161,7 +181,7 @@ void	parse_map(t_view *view)
 	table[0] = "111111111";
 	table[1] = "100000001";
 	table[2] = "100000001";
-	table[3] = "100000001";
+	table[3] = "100010001";
 	table[4] = "100000001";
 	table[5] = "100000001";
 	table[6] = "100000001";
