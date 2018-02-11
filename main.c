@@ -59,6 +59,7 @@ float	find_xintercept_dist(float x_delta, float y_delta, t_map *map)
 	{
 		while (1)
 		{
+			// TODO: handle when x_delta == 0
 			x = (currentY - map->cameraY) / (y_delta / x_delta) + map->cameraX;
 			if (!in_map((int)x, (int)currentY - 1, map))
 				return (0);
@@ -81,19 +82,16 @@ float	find_yintercept_dist(float x_delta, float y_delta, t_map *map)
 	
 	adjustment = (x_delta < 0) ? 1 : 0;
 	if (x_delta < 0)
-		currentX = roundf(map->cameraX);
+		currentX = (int)map->cameraX;
 	else
-		currentX = roundf(map->cameraX + 1);
+		currentX = (int)map->cameraX + 1;
 	while (1)
 	{
-		y = (currentX - map->cameraX) * (y_delta / x_delta) + map->cameraY;
-		if (!in_map((int)currentX - adjustment, (int)y, map)) // TODO pass map
+		if (!x_delta)
 			return (0);
-		ft_putstr("x: ");
-		ft_putnbr((int)currentX - adjustment);
-		ft_putstr(", y: ");
-		ft_putnbr((int)y);
-		ft_putchar('\n');
+		y = (currentX - map->cameraX) * (y_delta / x_delta) + map->cameraY;
+		if (!in_map((int)currentX - adjustment, (int)y, map))
+					return (0);
 		if (map->grid[(int)y][(int)currentX - adjustment] == '1')
 		{
 			return fabs(map->cameraY - y); // TODO: use hypotenuse to get this work with different camera directions!!!!!
@@ -137,7 +135,9 @@ void	draw(t_view *view)
 	{
 		distance = find_distance(x, view->map, width_in_pixels);
 		if (x == 0)
-			printf("cameraX: %f, cameraY: %f\n", view->map->cameraX, view->map->cameraY);
+			printf("redraw\n");
+		//	printf("cameraX: %f, cameraY: %f\n", view->map->cameraX, view->map->cameraY);
+		printf("distance: %f\n", distance);
 		draw_column(view, x, distance);
 		x++;
 	}

@@ -6,7 +6,7 @@
 /*   By: scamargo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/05 13:28:19 by scamargo          #+#    #+#             */
-/*   Updated: 2018/02/10 15:50:30 by scamargo         ###   ########.fr       */
+/*   Updated: 2018/02/10 18:22:21 by scamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ typedef struct	s_view
 	t_map	*map;
 }				t_view;
 
-# define PIXELS_PER_UNIT 375
+# define PIXELS_PER_UNIT 300
 # define WINDOW_HEIGHT 1.15
 # define WINDOW_WIDTH 1.15
 # define WALL_HEIGHT 4
