@@ -7,9 +7,9 @@
 
 int		in_map(int x, int y, t_map *map)
 {
-	if (x < 0 || x > map->width)
+	if (x < 0 || x > map->width - 1)
 		return (0);
-	if (y < 0 || y > map->height)
+	if (y < 0 || y > map->height - 1)
 		return (0);
 	return (1);
 }
@@ -89,6 +89,11 @@ float	find_yintercept_dist(float x_delta, float y_delta, t_map *map)
 		y = (currentX - map->cameraX) * (y_delta / x_delta) + map->cameraY;
 		if (!in_map((int)currentX - adjustment, (int)y, map)) // TODO pass map
 			return (0);
+		ft_putstr("x: ");
+		ft_putnbr((int)currentX - adjustment);
+		ft_putstr(", y: ");
+		ft_putnbr((int)y);
+		ft_putchar('\n');
 		if (map->grid[(int)y][(int)currentX - adjustment] == '1')
 		{
 			return fabs(map->cameraY - y); // TODO: use hypotenuse to get this work with different camera directions!!!!!
