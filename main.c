@@ -5,6 +5,15 @@
 #include <stdio.h>
 #include <math.h>
 
+int		in_map(int x, int y, t_map *map)
+{
+	if (x < 0 || x > map->width)
+		return (0);
+	if (y < 0 || y > map->height)
+		return (0);
+	return (1);
+}
+
 void	draw_column(t_view *view, int x, float distance_to_wall)
 {
 	float fov_height;
@@ -48,30 +57,18 @@ float	find_xintercept_dist(float x_delta, float y_delta, t_map *map)
 	{
 		while (1)
 		{
-			if (1) // TODO: change to if(in_map(currentY))
-			{
-				x = (currentY - map->cameraY) / (y_delta / x_delta) + map->cameraX;
-				if (map->grid[(int)currentY - 1][(int)x] == '1')
-				{
-					return fabs(map->cameraY - currentY); // TODO: use hypotenuse to get this work with different camera directions!!!!!
-				}
-				currentY--;
-			}
-			else
+			x = (currentY - map->cameraY) / (y_delta / x_delta) + map->cameraX;
+			if (!in_map((int)x, (int)currentY - 1, map))
 				return (0);
+			if (map->grid[(int)currentY - 1][(int)x] == '1')
+			{
+				return fabs(map->cameraY - currentY); // TODO: use hypotenuse to get this work with different camera directions!!!!!
+			}
+			currentY--;
 		}
 	}
 	// TODO: handle y_delta >= 0
 	return (0);
-}
-
-int		in_map(int x, int y) // TODO: use boundaries of map to do check
-{
-	if (x < 0 || x > 8)
-		return (0);
-	if (y < 0 || y > 9)
-		return (0);
-	return (1);
 }
 
 float	find_yintercept_dist(float x_delta, float y_delta, t_map *map)
@@ -88,7 +85,7 @@ float	find_yintercept_dist(float x_delta, float y_delta, t_map *map)
 	while (1)
 	{
 		y = (currentX - map->cameraX) * (y_delta / x_delta) + map->cameraY;
-		if (!in_map((int)currentX - adjustment, (int)y)) // TODO pass map
+		if (!in_map((int)currentX - adjustment, (int)y, map)) // TODO pass map
 			return (0);
 		if (map->grid[(int)y][(int)currentX - adjustment] == '1')
 		{
