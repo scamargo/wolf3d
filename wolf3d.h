@@ -6,7 +6,7 @@
 /*   By: scamargo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/05 13:28:19 by scamargo          #+#    #+#             */
-/*   Updated: 2018/02/10 18:22:21 by scamargo         ###   ########.fr       */
+/*   Updated: 2018/02/12 21:52:04 by scamargo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ typedef struct	s_map
 	int		height;
 	float	cameraX;
 	float	cameraY;
-	int		directionX;
-	int		directionY;
+	double	camera_dir;
+	double	plane_dir;
 }				t_map;
 
 typedef struct	s_view
